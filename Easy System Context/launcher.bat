@@ -29,6 +29,7 @@ if "%mode%"=="1" (
   echo Launching PSADT in Silent Mode...
   start "" psexec.exe -s cmd.exe
   exit
+  
 ) else (
   echo Invalid option. Please run the script again and select a valid option.
   pause
