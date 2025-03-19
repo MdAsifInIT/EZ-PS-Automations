@@ -20,13 +20,13 @@ if not exist "psexec.exe" (
 :: Present user with options
 echo.
 echo Select the mode for running PSADT:
-echo 1. Integrated (-is cmd)
+echo 1. interactive (-is cmd)
 echo 2. Silent (-s cmd)
 set /p mode="Enter your choice (1 or 2): "
 
 :: Validate user input and run the corresponding PSADT command
 if "%mode%"=="1" (
-  echo Launching PSADT in Integrated Mode...
+  echo Launching PSADT in interactive Mode...
   start "" psexec.exe -i -s cmd.exe
   timeout /t 1 /nobreak >nul
   exit
