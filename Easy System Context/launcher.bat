@@ -16,13 +16,14 @@ if not exist "psexec.exe" (
 )
 
 echo.
+echo Welcome to System Context Command Prompt Launcher
 echo Select the mode for running PSADT:
 echo 1. Interactive (-i 1 -s cmd)
 echo 2. Silent (-s cmd)
 set /p mode="Enter your choice (1 or 2): "
 
 if "%mode%"=="1" (
-  echo Launching PSADT in Interactive Mode...
+  echo Launching PSADT in Interactive Mode...Enjoy!
   psexec.exe -d -i -s cmd.exe >nul 2>&1
   exit /b
 ) else if "%mode%"=="2" (
