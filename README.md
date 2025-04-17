@@ -33,11 +33,11 @@ This repository hosts two main tools:
 
 ### Bulk Intunewin Conversion Tool
 
-1. Configure settings in `Easy Intunewin\v3\config.xml`.
+1. Configure settings in `Easy Intunewin\v1\config.xml`.
 2. Place the files to be converted in the designated input folder (refer to the configuration).
 3. Run the conversion script:
    ```powershell
-   .\Easy Intunewin\v3\intunewin3.ps1
+   .\Easy Intunewin\v1\intunewin3.ps1
    ```
 4. The converted `.intunewin` files will be created in the specified output folder.
 
