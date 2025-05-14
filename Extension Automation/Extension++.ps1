@@ -9,7 +9,7 @@ param(
 
 # Application Variables
 [String]$appName = ''
-[String]$appVendor = 'Munich Re'
+[String]$appVendor = ''
 [String]$appVersion = ''
 
 [String]$rdid = ''
