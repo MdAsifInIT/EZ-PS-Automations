@@ -4,7 +4,7 @@ param(
     [string]$Action = 'Install',
 
     [Parameter(Mandatory = $false)]
-    [string]$LogPath = "$env:TEMP\ExtensionDeployment.log"
+    [string]$LogPath = $null
 )
 
 # Application Variables
@@ -26,6 +26,8 @@ param(
 [String]$chromeExtensionUrl = 'https://clients2.google.com/service/update2/crx'
 [String]$edgeExtensionUrl = 'https://edge.microsoft.com/extensionwebstorebase/v1/crx'
 
+#### Caution: Functions below!! ####
+
 # Logging function
 function Write-Log {
     param (
@@ -39,8 +41,8 @@ function Write-Log {
     $logMessage = "[$timestamp] [$Level] $Message"
     Write-Host $logMessage
 
-    # Always write to log file if LogPath is set (either default or explicit)
-    if (-not [string]::IsNullOrEmpty($LogPath)) {
+    # Write logs iff LogPath is set
+    if ($LogPath -and -not [string]::IsNullOrEmpty($LogPath)) {
         $logDir = Split-Path -Path $LogPath -Parent
         if (-not (Test-Path -Path $logDir)) {
             New-Item -Path $logDir -ItemType Directory -Force | Out-Null
@@ -85,13 +87,13 @@ function Install {
             Set-ItemProperty -Path $edgePolicyPath -Name $rdid -Value "$edgeExtensionId;$edgeExtensionUrl" -Type String
         }
 
-        # Registry entry for application
+        # ARP Entry
         if (Test-Path -Path $appregpath) {
-            Write-Log "Removing existing application registry entry" -Level 'Info'
+            Write-Log "Removing existing ARP entry" -Level 'Info'
             Remove-Item -Path $appregpath -Recurse -Force
         }
 
-        Write-Log "Creating application registry entry" -Level 'Info'
+        Write-Log "Creating ARP entry" -Level 'Info'
         New-Item -Path $appregpath -Force | Out-Null
 
         Set-ItemProperty -Path $appregpath -Name 'DisplayName' -Value $pkgName -Type String
@@ -126,9 +128,9 @@ function Uninstall {
             Remove-ItemProperty -Path $edgePolicyPath -Name $rdid -Force -ErrorAction SilentlyContinue
         }
 
-        # Registry entry
+        # ARP Entry
         if (Test-Path -Path $appregpath) {
-            Write-Log "Removing application registry entry" -Level 'Info'
+            Write-Log "Removing ARP entry" -Level 'Info'
             Remove-Item -Path $appregpath -Recurse -Force
         }
 
