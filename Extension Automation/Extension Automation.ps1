@@ -1,3 +1,16 @@
+# Extension Automation Script v2
+# 
+# This PowerShell script automates the installation and uninstallation of Chrome and Edge browser extensions via Windows registry policy.
+#
+# Functionality:
+# - Installs or uninstalls Chrome/Edge extensions by setting or removing registry policies for ExtensionInstallForcelist.
+# - Handles ARP (Add/Remove Programs) registry entries for the application.
+# - Logs all actions and errors to the console and optionally to a log file.
+# - Validates all critical variables before performing registry operations.
+# - Can be run with 'Install' or 'Uninstall' action modes.
+
+# Script Updated on: 06-26-2025
+
 param(
     [Parameter(Mandatory = $false)]
     [ValidateSet('Install', 'Uninstall')]
@@ -69,20 +82,23 @@ function Install {
 
     try {
         # Validate critical variables
-        if ([string]::IsNullOrEmpty($appName)) {
+        if ([string]::IsNullOrWhiteSpace($appName)) {
             Write-Log "Application name is empty. Registry operations may fail." -Level 'Error'
             $script:exitCode = 1
             return
         }
         
-        if ([string]::IsNullOrEmpty($rdid)) {
+        if ([string]::IsNullOrWhiteSpace($rdid)) {
             Write-Log "RDID is empty. Extension policy operations will fail." -Level 'Error'
             $script:exitCode = 1
             return
         }
 
         # Chrome extension
-        if (-not [string]::IsNullOrEmpty($chromeExtensionId)) {
+        if (
+            -not [string]::IsNullOrWhiteSpace($chromeExtensionId) -and 
+            -not [string]::IsNullOrWhiteSpace($chromeExtensionUrl)
+        ) {
             if (-not (Test-Path -Path $chromePolicyPath)) {
                 Write-Log "Creating Chrome policy path" -Level 'Info'
                 New-Item -Path $chromePolicyPath -Force -ErrorAction Stop | Out-Null
@@ -92,7 +108,10 @@ function Install {
         }
 
         # Edge extension
-        if (-not [string]::IsNullOrWhiteSpace($edgeExtensionId)) {
+        if (
+            -not [string]::IsNullOrWhiteSpace($edgeExtensionId) -and 
+            -not [string]::IsNullOrWhiteSpace($edgeExtensionUrl)
+        ) {
             if (-not (Test-Path -Path $edgePolicyPath)) {
                 Write-Log "Creating Edge policy path" -Level 'Info'
                 New-Item -Path $edgePolicyPath -Force -ErrorAction Stop | Out-Null
@@ -131,26 +150,36 @@ function Uninstall {
 
     try {
         # Validate critical variables
-        if ([string]::IsNullOrEmpty($appName)) {
+        if ([string]::IsNullOrWhiteSpace($appName)) {
             Write-Log "Application name is empty. Registry operations may fail." -Level 'Error'
             $script:exitCode = 1
             return
         }
         
-        if ([string]::IsNullOrEmpty($rdid)) {
+        if ([string]::IsNullOrWhiteSpace($rdid)) {
             Write-Log "RDID is empty. Extension policy operations will fail." -Level 'Error'
             $script:exitCode = 1
             return
         }
 
         # Chrome extension
-        if (Test-Path -Path $chromePolicyPath) {
+        if (
+            -not [string]::IsNullOrWhiteSpace($chromeExtensionId) -and 
+            -not [string]::IsNullOrWhiteSpace($chromeExtensionUrl) -and 
+            -not [string]::IsNullOrWhiteSpace($chromePolicyPath) -and 
+            (Test-Path -Path $chromePolicyPath)
+        ) {
             Write-Log "Removing Chrome extension policy" -Level 'Info'
             Remove-ItemProperty -Path $chromePolicyPath -Name $rdid -Force -ErrorAction SilentlyContinue
         }
 
         # Edge extension
-        if (Test-Path -Path $edgePolicyPath) {
+        if (
+            -not [string]::IsNullOrWhiteSpace($edgeExtensionId) -and 
+            -not [string]::IsNullOrWhiteSpace($edgeExtensionUrl) -and 
+            -not [string]::IsNullOrWhiteSpace($edgePolicyPath) -and 
+            (Test-Path -Path $edgePolicyPath)
+        ) {
             Write-Log "Removing Edge extension policy" -Level 'Info'
             Remove-ItemProperty -Path $edgePolicyPath -Name $rdid -Force -ErrorAction SilentlyContinue
         }
