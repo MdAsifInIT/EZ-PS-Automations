@@ -107,9 +107,11 @@ function Install {
             if (-not (Test-Path -Path $chromePolicyPath)) {
                 Write-Log "Creating Chrome policy path" -Level 'Info'
                 New-Item -Path $chromePolicyPath -Force -ErrorAction Stop | Out-Null
+                Write-Log "Chrome policy path created: $chromePolicyPath" -Level 'Info'
             }
             Write-Log "Setting Chrome extension policy for $chromeExtensionId" -Level 'Info'
             Set-ItemProperty -Path $chromePolicyPath -Name $rdid -Value "$chromeExtensionId;$chromeExtensionUrl" -Type String -ErrorAction Stop
+            Write-Log "Chrome extension policy set for $chromeExtensionId at $chromePolicyPath" -Level 'Info'
         }
 
         # Edge extension
@@ -120,19 +122,23 @@ function Install {
             if (-not (Test-Path -Path $edgePolicyPath)) {
                 Write-Log "Creating Edge policy path" -Level 'Info'
                 New-Item -Path $edgePolicyPath -Force -ErrorAction Stop | Out-Null
+                Write-Log "Edge policy path created: $edgePolicyPath" -Level 'Info'
             }
             Write-Log "Setting Edge extension policy for $edgeExtensionId" -Level 'Info'
             Set-ItemProperty -Path $edgePolicyPath -Name $rdid -Value "$edgeExtensionId;$edgeExtensionUrl" -Type String -ErrorAction Stop
+            Write-Log "Edge extension policy set for $edgeExtensionId at $edgePolicyPath" -Level 'Info'
         }
 
         # ARP Entry
         if (Test-Path -Path $appregpath) {
             Write-Log "Removing existing ARP entry" -Level 'Info'
             Remove-Item -Path $appregpath -Recurse -Force -ErrorAction SilentlyContinue
+            Write-Log "Existing ARP entry removed: $appregpath" -Level 'Info'
         }
 
         Write-Log "Creating ARP entry" -Level 'Info'
         New-Item -Path $appregpath -Force -ErrorAction Stop | Out-Null
+        Write-Log "ARP entry created: $appregpath" -Level 'Info'
 
         Set-ItemProperty -Path $appregpath -Name 'DisplayName' -Value $pkgName -Type String -ErrorAction Stop
         Set-ItemProperty -Path $appregpath -Name 'DisplayVersion' -Value $appVersion -Type String -ErrorAction Stop
@@ -177,6 +183,7 @@ function Uninstall {
         ) {
             Write-Log "Removing Chrome extension policy" -Level 'Info'
             Remove-ItemProperty -Path $chromePolicyPath -Name $rdid -Force -ErrorAction SilentlyContinue
+            Write-Log "Chrome extension policy removed for $chromeExtensionId at $chromePolicyPath" -Level 'Info'
         }
 
         # Edge extension
@@ -188,12 +195,14 @@ function Uninstall {
         ) {
             Write-Log "Removing Edge extension policy" -Level 'Info'
             Remove-ItemProperty -Path $edgePolicyPath -Name $rdid -Force -ErrorAction SilentlyContinue
+            Write-Log "Edge extension policy removed for $edgeExtensionId at $edgePolicyPath" -Level 'Info'
         }
 
         # ARP Entry
         if (Test-Path -Path $appregpath) {
             Write-Log "Removing ARP entry" -Level 'Info'
             Remove-Item -Path $appregpath -Recurse -Force -ErrorAction SilentlyContinue
+            Write-Log "ARP entry removed: $appregpath" -Level 'Info'
         }
 
         Write-Log "Uninstallation completed successfully" -Level 'Info'
