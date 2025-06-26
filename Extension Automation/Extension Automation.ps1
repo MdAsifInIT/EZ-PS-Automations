@@ -49,11 +49,16 @@ function Write-Log {
         [Parameter(Mandatory = $true)]
         [string]$Message,
         [ValidateSet('Info', 'Warning', 'Error')]
-        [string]$Level = 'Info'
+        [string]$Level = 'Info',
+        [string]$FunctionName = $null,
+        [int]$LineNumber = $null
     )
 
     $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-    $logMessage = "[$timestamp] [$Level] $Message"
+    $context = ''
+    if ($FunctionName) { $context += " [$FunctionName]" }
+    if ($LineNumber) { $context += " [Line $LineNumber]" }
+    $logMessage = "[$timestamp] [$Level]$context $Message"
     Write-Host $logMessage
 
     # Write logs if LogPath is set
@@ -140,7 +145,8 @@ function Install {
         Write-Log "Installation completed successfully" -Level 'Info'
     }
     catch {
-        Write-Log "Error during installation: $_" -Level 'Error'
+        $invocation = $MyInvocation
+        Write-Log "Error during installation: $_" -Level 'Error' -FunctionName $invocation.FunctionName -LineNumber $invocation.ScriptLineNumber
         $script:exitCode = 1
     }
 }
@@ -193,7 +199,8 @@ function Uninstall {
         Write-Log "Uninstallation completed successfully" -Level 'Info'
     }
     catch {
-        Write-Log "Error during uninstallation: $_" -Level 'Error'
+        $invocation = $MyInvocation
+        Write-Log "Error during uninstallation: $_" -Level 'Error' -FunctionName $invocation.FunctionName -LineNumber $invocation.ScriptLineNumber
         $script:exitCode = 1
     }
 }
