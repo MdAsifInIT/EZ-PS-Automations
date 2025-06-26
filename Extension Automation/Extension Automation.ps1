@@ -102,7 +102,8 @@ function Install {
         # Chrome extension
         if (
             -not [string]::IsNullOrWhiteSpace($chromeExtensionId) -and 
-            -not [string]::IsNullOrWhiteSpace($chromeExtensionUrl)
+            -not [string]::IsNullOrWhiteSpace($chromeExtensionUrl) -and
+            -not [string]::IsNullOrWhiteSpace($chromePolicyPath)
         ) {
             if (-not (Test-Path -Path $chromePolicyPath)) {
                 Write-Log "Creating Chrome policy path" -Level 'Info'
@@ -117,7 +118,8 @@ function Install {
         # Edge extension
         if (
             -not [string]::IsNullOrWhiteSpace($edgeExtensionId) -and 
-            -not [string]::IsNullOrWhiteSpace($edgeExtensionUrl)
+            -not [string]::IsNullOrWhiteSpace($edgeExtensionUrl) -and
+            -not [string]::IsNullOrWhiteSpace($edgePolicyPath)
         ) {
             if (-not (Test-Path -Path $edgePolicyPath)) {
                 Write-Log "Creating Edge policy path" -Level 'Info'
@@ -151,8 +153,7 @@ function Install {
         Write-Log "Installation completed successfully" -Level 'Info'
     }
     catch {
-        $invocation = $MyInvocation
-        Write-Log "Error during installation: $_" -Level 'Error' -FunctionName $invocation.FunctionName -LineNumber $invocation.ScriptLineNumber
+        Write-Log "Error during installation: $_" -Level 'Error' -FunctionName $_.InvocationInfo.FunctionName -LineNumber $_.InvocationInfo.ScriptLineNumber
         $script:exitCode = 1
     }
 }
@@ -208,8 +209,7 @@ function Uninstall {
         Write-Log "Uninstallation completed successfully" -Level 'Info'
     }
     catch {
-        $invocation = $MyInvocation
-        Write-Log "Error during uninstallation: $_" -Level 'Error' -FunctionName $invocation.FunctionName -LineNumber $invocation.ScriptLineNumber
+        Write-Log "Error during uninstallation: $_" -Level 'Error' -FunctionName $_.InvocationInfo.FunctionName -LineNumber $_.InvocationInfo.ScriptLineNumber
         $script:exitCode = 1
     }
 }
