@@ -1,4 +1,4 @@
-# PowerShell Utilities
+# EZ-PS-Automations
 
 ## Overview
 
@@ -9,24 +9,24 @@ This repository hosts two main tools:
 
 ## Features
 
-- **Bulk Intunewin Conversion Tool**: Automates the conversion of multiple files into `.intunewin` format for Microsoft Intune deployments.
-- **Auto System Context**: Simplifies running scripts or commands in the system context without manual intervention.
+- **Bulk Intunewin Conversion Tool**: Batch converts files to `.intunewin` format for streamlined Intune deployments.
+- **Auto System Context**: Easily run scripts or commands in the system context, interactively or silently.
 
 ## Prerequisites
 
 - PowerShell 5.1 or later
 - Administrative privileges for certain scripts
-- Required dependencies (e.g., psexec.exe) must be present in the appropriate directories
+- Required dependencies (e.g., `psexec.exe`) must be present in the appropriate directories
 
 ## Installation
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your-username/PowerShell-Utilities.git
+   git clone https://github.com/MdAsifInIT/EZ-PS-Automations.git
    ```
 2. Change to the repository directory:
    ```bash
-   cd C:\Users\Asif\Documents\Code\PowerShell-Utilities
+   cd c:\Code\EZ-PS-Automations
    ```
 
 ## Usage
@@ -34,24 +34,24 @@ This repository hosts two main tools:
 ### Bulk Intunewin Conversion Tool
 
 1. Configure settings in `Easy Intunewin\v1\config.xml`.
-2. Place the files to be converted in the designated input folder (refer to the configuration).
+2. Place the files to be converted in the input folder specified in the configuration.
 3. Run the conversion script:
    ```powershell
    .\Easy Intunewin\v1\intunewin3.ps1
    ```
-4. The converted `.intunewin` files will be created in the specified output folder.
+4. The converted `.intunewin` files will be created in the output folder specified in the configuration.
 
 ### Auto System Context
 
-1. Execute the launcher script:
+1. Run the launcher script:
    ```bat
    .\Easy System Context\launcher.bat
    ```
-2. Follow the on-screen prompts to select either Interactive or Silent mode.
+2. Choose Interactive or Silent mode as prompted.
 
 ## Contributing
 
-Contributions are welcome! Fork the repository and submit a pull request with improvements.
+Contributions are welcome! Fork the repository and submit a pull request with your improvements.
 
 ## License
 
