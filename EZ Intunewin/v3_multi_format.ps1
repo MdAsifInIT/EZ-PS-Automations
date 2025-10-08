@@ -1,20 +1,18 @@
 # IntuneWin Bulk Packaging Script v3.0 - Multi-Format Edition
 #
-# This PowerShell script automates the bulk creation of .intunewin files for Microsoft Intune Win32 app deployment.
+# Automates bulk creation of .intunewin packages.
+# 
+# What it does:
+# - Scans a parent folder and processes all package subfolders
+# - Auto-detects setup files (.exe, .ps1, .msi) in package root or App subfolder
+# - Creates .intunewin files using Microsoft's Content Prep Tool
+# - Renames output files to match your package folder names
+# - Validates paths and tools before starting
+# - Logs everything with detailed error messages
+# - Runs completely unattended - perfect for automation and CI/CD
+# - Supports multiple file types with smart auto-detection
 #
-# Functionality:
-# - Processes multiple application packages in a parent folder structure
-# - Locates Deploy-Application.exe in App subfolder or package root
-# - Creates .intunewin files using Microsoft Win32 Content Prep Tool
-# - Renames output files to match package folder names
-# - Validates all paths and prerequisites before processing
-# - Logs all actions, errors, and summary statistics with detailed output
-# - Designed for completely unattended execution (no user prompts)
-# - Suitable for automation, scheduled tasks, and CI/CD pipelines
-#
-# Script Updated on: 10-07-2025
-# v3.0: Added support for multiple file types with auto-detection
-
+# Updated: 8th October 2025
 
 # PackageFolder/
 # ├── App/
@@ -39,8 +37,6 @@ param(
 $ConfirmPreference = 'None'
 $ProgressPreference = 'SilentlyContinue'
 $ErrorActionPreference = 'Stop'
-
-#region Configuration Variables - MODIFY THESE AS NEEDED
 
 # ============================================================================
 # PATH CONFIGURATION
