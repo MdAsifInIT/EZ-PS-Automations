@@ -1,4 +1,4 @@
-# IntuneWin Bulk Packaging Script v3.0 - Multi-Format Edition
+# IntuneWin Bulk Packaging Script v4.0 - Multi-Format Edition
 #
 # Automates bulk creation of .intunewin packages.
 # 
@@ -68,13 +68,7 @@ $ErrorActionPreference = 'Stop'
 # Supports: .exe, .ps1, .msi, .bat, .cmd, .vbs, etc.
 [string[]]$script:setupFilePatterns = @(
     'Deploy-Application.exe',
-    'Deploy-Application.ps1',
-    'setup.exe',
-    'install.exe',
-    'setup.msi',
-    'install.msi',
-    '*.msi',
-    '*.exe'
+    'Deploy-Application.ps1'
 )
 
 # Legacy variable kept for backward compatibility (will be overridden by auto-detection)
