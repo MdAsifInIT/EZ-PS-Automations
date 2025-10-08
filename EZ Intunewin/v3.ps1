@@ -20,9 +20,11 @@
 # └── Intune/ (output)
 
 # PackageFolder/
-# ├── Deploy-Application.exe  ← This is packaged (highest priority)
-# ├── setup.exe              ← Ignored (lower priority)
-# └── install.msi            ← Ignored (lower priority)
+# ├── App/
+# │   ├── Deploy-Application.exe  ← This is packaged (highest priority)
+# │   ├── setup.exe              ← Ignored (lower priority)
+# │   └── install.msi            ← Ignored (lower priority)
+# └── Intune/ (output)
 
 
 param(
