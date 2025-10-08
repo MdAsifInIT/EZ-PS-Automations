@@ -115,10 +115,18 @@ try {
         Write-Host ("{0,-35} : {1}" -f "Property", "Value") -ForegroundColor White
         Write-Host ("-" * 80) -ForegroundColor Gray
         
-        $propertyChanges = $transformChanges | Where-Object { $_.Table -eq "Property" }
+        # Filter for Property table and exclude INSERT/DELETE operations
+        $propertyChanges = $transformChanges | Where-Object { 
+            $_.Table -eq "Property" -and 
+            $_.Column -ne "INSERT" -and 
+            $_.Column -ne "DELETE" -and
+            $_.Column -ne "CREATE" -and
+            $_.Column -ne "DROP"
+        }
         
         foreach ($change in $propertyChanges) {
-            Write-Host ("{0,-35} : {1}" -f $change.Column, $change.Data) -ForegroundColor White
+            # For Property table, Row contains the property name, Data contains the value
+            Write-Host ("{0,-35} : {1}" -f $change.Row, $change.Data) -ForegroundColor White
         }
         
         if ($propertyChanges.Count -eq 0) {
