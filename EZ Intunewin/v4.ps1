@@ -26,7 +26,6 @@
 # │   └── install.msi            ← Ignored (lower priority)
 # └── Intune/ (output)
 
-
 param(
     [Parameter(Mandatory = $false)]
     [string]$ParentFolderPath = $null,
@@ -39,6 +38,8 @@ param(
 $ConfirmPreference = 'None'
 $ProgressPreference = 'SilentlyContinue'
 $ErrorActionPreference = 'Stop'
+
+# Configuration Variables - MODIFY THESE AS NEEDED
 
 # ============================================================================
 # PATH CONFIGURATION
@@ -113,7 +114,7 @@ $ErrorActionPreference = 'Stop'
 # Core Functions - DO NOT MODIFY UNLESS NECESSARY
 
 # ============================================================================
-# LOGGING FUNCTION
+# LOGGING FUNCTIONS
 # ============================================================================
 
 function Write-Log {
@@ -141,11 +142,11 @@ function Write-Log {
     
     # Console output with color coding
     switch ($Level) {
-        'Error' { Write-Host $logMessage -ForegroundColor Red }
+        'Error'   { Write-Host $logMessage -ForegroundColor Red }
         'Warning' { Write-Host $logMessage -ForegroundColor Yellow }
         'Success' { Write-Host $logMessage -ForegroundColor Green }
         'Verbose' { Write-Host $logMessage -ForegroundColor Cyan }
-        default { Write-Host $logMessage }
+        default   { Write-Host $logMessage }
     }
 
     # Write to log file if LogPath is set
@@ -168,6 +169,7 @@ function Write-Log {
 # ============================================================================
 
 $script:exitCode = 0
+
 function Exit-Script {
     <#
     .SYNOPSIS
@@ -272,19 +274,19 @@ function Find-SetupFile {
         [string]$SearchPath
     )
 
-    Write-Log "  Searching for setup file in: $SearchPath" -Level 'Verbose'
+    Write-Log "  Searching for setup file in: $SearchPath"
 
     foreach ($pattern in $script:setupFilePatterns) {
-        Write-Log "    Checking pattern: $pattern" -Level 'Verbose'
+        Write-Log "    Checking pattern: $pattern"
 
         # Check for exact match first
         $exactPath = Join-Path -Path $SearchPath -ChildPath $pattern
         if (Test-Path -Path $exactPath -PathType Leaf) {
             $fileName = Split-Path -Path $exactPath -Leaf
-            Write-Log "    Found (exact match): $fileName" -Level 'Verbose'
+            Write-Log "    Found (exact match): $fileName"
             return @{
-                Found    = $true
-                Path     = $exactPath
+                Found = $true
+                Path = $exactPath
                 FileName = $fileName
             }
         }
@@ -296,24 +298,24 @@ function Find-SetupFile {
                 if ($matchingFiles -and $matchingFiles.Count -gt 0) {
                     # Take the first matching file
                     $firstMatch = $matchingFiles | Select-Object -First 1
-                    Write-Log "    Found (wildcard match): $($firstMatch.Name)" -Level 'Verbose'
+                    Write-Log "    Found (wildcard match): $($firstMatch.Name)"
                     return @{
-                        Found    = $true
-                        Path     = $firstMatch.FullName
+                        Found = $true
+                        Path = $firstMatch.FullName
                         FileName = $firstMatch.Name
                     }
                 }
             }
             catch {
-                Write-Log "    Error searching with pattern '$pattern': $_" -Level 'Verbose'
+                Write-Log "    Error searching with pattern '$pattern': $_"
             }
         }
     }
 
-    Write-Log "    No setup file found matching any configured pattern" -Level 'Verbose'
+    Write-Log "    No setup file found matching any configured pattern"
     return @{
-        Found    = $false
-        Path     = $null
+        Found = $false
+        Path = $null
         FileName = $null
     }
 }
@@ -334,44 +336,38 @@ function Test-PackageFolder {
 
     Write-Log "Processing package: $folderName" -Level 'Info'
 
-    # Search for setup file in package root first
-    Write-Log "  Searching for setup file in package root" -Level 'Verbose'
-    $setupFileInRoot = Find-SetupFile -SearchPath $PackageFolder.FullName
-
-    # Search for setup file in App subfolder if it exists
-    $setupFileInAppFolder = @{ Found = $false; Path = $null; FileName = $null }
-    if (Test-Path -Path $appFolder -PathType Container) {
-        Write-Log "  Searching for setup file in App subfolder" -Level 'Verbose'
-        $setupFileInAppFolder = Find-SetupFile -SearchPath $appFolder
-    }
-
-    # Determine which setup file to use (prioritize root over App folder)
-    $setupFile = $null
-    $sourcePath = $null
-
-    if ($setupFileInRoot.Found) {
-        $setupFile = $setupFileInRoot
-        $sourcePath = $PackageFolder.FullName
-        Write-Log "  Setup file found in package root: $($setupFile.FileName)" -Level 'Success'
-        Write-Log "  Source: Package root folder" -Level 'Verbose'
-    }
-    elseif ($setupFileInAppFolder.Found) {
-        $setupFile = $setupFileInAppFolder
-        $sourcePath = $appFolder
-        Write-Log "  Setup file found in App subfolder: $($setupFile.FileName)" -Level 'Success'
-        Write-Log "  Source: App subfolder" -Level 'Verbose'
-    }
-    else {
-        # No setup file found
+    # Check if App subfolder exists
+    if (-not (Test-Path -Path $appFolder -PathType Container)) {
         if ($script:autoSkipInvalidFolders) {
-            Write-Log "Skipping $folderName - No setup file found matching configured patterns" -Level 'Warning'
+            Write-Log "Skipping $folderName - App subfolder does not exist" -Level 'Warning'
             return @{ Success = $null; SizeMB = 0 }
         }
         else {
-            Write-Log "Error processing $folderName - No setup file found matching configured patterns" -Level 'Error'
+            Write-Log "Error processing $folderName - App subfolder does not exist" -Level 'Error'
             return @{ Success = $false; SizeMB = 0 }
         }
     }
+
+    # Search for setup file in App subfolder only
+    Write-Log "  Searching for setup file in App subfolder"
+    $setupFile = Find-SetupFile -SearchPath $appFolder
+
+    # Check if setup file was found
+    if (-not $setupFile.Found) {
+        if ($script:autoSkipInvalidFolders) {
+            Write-Log "Skipping $folderName - No setup file found in App subfolder matching configured patterns" -Level 'Warning'
+            return @{ Success = $null; SizeMB = 0 }
+        }
+        else {
+            Write-Log "Error processing $folderName - No setup file found in App subfolder matching configured patterns" -Level 'Error'
+            return @{ Success = $false; SizeMB = 0 }
+        }
+    }
+
+    # Setup file found in App subfolder
+    $sourcePath = $appFolder
+    Write-Log "  Setup file found in App subfolder: $($setupFile.FileName)" -Level 'Success'
+    Write-Log "  Source: App subfolder"
 
     # Update script variable for compatibility with rest of the code
     $script:deployAppName = $setupFile.FileName
@@ -546,7 +542,9 @@ function Start-BulkProcessing {
     }
 }
 
-# END Core Functions
+#endregion Core Functions
+
+#region Main Execution
 
 # ============================================================================
 # MAIN SCRIPT EXECUTION - UNATTENDED MODE
@@ -557,7 +555,7 @@ Write-Log "IntuneWin Bulk Packaging Script Started" -Level 'Info'
 Write-Log "Mode: Unattended Execution" -Level 'Info'
 Write-Log "=========================================" -Level 'Info'
 
-# Displaying configuration
+# Display configuration
 Write-Log "Configuration Details:" -Level 'Info'
 Write-Log "  App Folder Name: $script:appFolderName" -Level 'Verbose'
 Write-Log "  Output Folder Name: $script:outputFolderName" -Level 'Verbose'
@@ -567,18 +565,18 @@ Write-Log "  Centralized Output: $script:centralizedOutputFolder" -Level 'Verbos
 Write-Log "  Auto Skip Invalid: $script:autoSkipInvalidFolders" -Level 'Verbose'
 Write-Log "  Overwrite Existing: $script:overwriteExistingFiles" -Level 'Verbose'
 
-# Validating prerequisites
+# Validate prerequisites
 if (-not (Test-Prerequisites)) {
     Exit-Script
 }
 
-# Testing and validating parent folder path
+# Get and validate parent folder path
 if (-not (Get-ValidatedParentFolderPath)) {
     Exit-Script
 }
 
-# Starting bulk processing
+# Start bulk processing
 Start-BulkProcessing
 
-# Exiting with appropriate code
+# Exit with appropriate code
 Exit-Script
