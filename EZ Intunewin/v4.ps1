@@ -242,7 +242,7 @@ function Get-ValidatedParentFolderPath {
         return $false
     }
 
-    # Clean the path (single location)
+    # Clean the path
     $script:ParentFolderPath = $script:ParentFolderPath.Trim().Replace('"', '')
 
     # Validate path exists
@@ -542,9 +542,7 @@ function Start-BulkProcessing {
     }
 }
 
-#endregion Core Functions
-
-#region Main Execution
+# END Core Functions
 
 # ============================================================================
 # MAIN SCRIPT EXECUTION - UNATTENDED MODE
@@ -555,7 +553,7 @@ Write-Log "IntuneWin Bulk Packaging Script Started" -Level 'Info'
 Write-Log "Mode: Unattended Execution" -Level 'Info'
 Write-Log "=========================================" -Level 'Info'
 
-# Display configuration
+# Displaying configuration
 Write-Log "Configuration Details:" -Level 'Info'
 Write-Log "  App Folder Name: $script:appFolderName" -Level 'Verbose'
 Write-Log "  Output Folder Name: $script:outputFolderName" -Level 'Verbose'
@@ -565,18 +563,18 @@ Write-Log "  Centralized Output: $script:centralizedOutputFolder" -Level 'Verbos
 Write-Log "  Auto Skip Invalid: $script:autoSkipInvalidFolders" -Level 'Verbose'
 Write-Log "  Overwrite Existing: $script:overwriteExistingFiles" -Level 'Verbose'
 
-# Validate prerequisites
+# Validating prerequisites
 if (-not (Test-Prerequisites)) {
     Exit-Script
 }
 
-# Get and validate parent folder path
+# Checking and validating parent folder path
 if (-not (Get-ValidatedParentFolderPath)) {
     Exit-Script
 }
 
-# Start bulk processing
+# Starting bulk processing
 Start-BulkProcessing
 
-# Exit with appropriate code
+# Exiting with appropriate code
 Exit-Script
