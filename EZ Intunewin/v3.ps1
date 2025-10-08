@@ -9,7 +9,7 @@
 # - Renames output files to match your package folder names
 # - Validates paths and tools before starting
 # - Logs everything with detailed error messages
-# - Runs completely unattended - perfect for automation and CI/CD
+# - Runs completely unattended - perfect for automation.
 # - Supports multiple file types with smart auto-detection
 #
 # Updated: 8th October 2025
