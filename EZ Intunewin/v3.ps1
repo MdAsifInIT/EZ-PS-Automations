@@ -139,11 +139,11 @@ function Write-Log {
     
     # Console output with color coding
     switch ($Level) {
-        'Error'   { Write-Host $logMessage -ForegroundColor Red }
+        'Error' { Write-Host $logMessage -ForegroundColor Red }
         'Warning' { Write-Host $logMessage -ForegroundColor Yellow }
         'Success' { Write-Host $logMessage -ForegroundColor Green }
         'Verbose' { Write-Host $logMessage -ForegroundColor Cyan }
-        default   { Write-Host $logMessage }
+        default { Write-Host $logMessage }
     }
 
     # Write to log file if LogPath is set
@@ -283,8 +283,8 @@ function Find-SetupFile {
             $fileName = Split-Path -Path $exactPath -Leaf
             Write-Log "    Found (exact match): $fileName" -Level 'Verbose'
             return @{
-                Found = $true
-                Path = $exactPath
+                Found    = $true
+                Path     = $exactPath
                 FileName = $fileName
             }
         }
@@ -298,8 +298,8 @@ function Find-SetupFile {
                     $firstMatch = $matchingFiles | Select-Object -First 1
                     Write-Log "    Found (wildcard match): $($firstMatch.Name)" -Level 'Verbose'
                     return @{
-                        Found = $true
-                        Path = $firstMatch.FullName
+                        Found    = $true
+                        Path     = $firstMatch.FullName
                         FileName = $firstMatch.Name
                     }
                 }
@@ -312,13 +312,13 @@ function Find-SetupFile {
 
     Write-Log "    No setup file found matching any configured pattern" -Level 'Verbose'
     return @{
-        Found = $false
-        Path = $null
+        Found    = $false
+        Path     = $null
         FileName = $null
     }
 }
 
-function Process-PackageFolder {
+function Test-PackageFolder {
     <#
     .SYNOPSIS
         Processes a single package folder to create .intunewin file.
@@ -502,7 +502,7 @@ function Start-BulkProcessing {
     $totalSizeMB = 0
 
     foreach ($packageFolder in $packageFolders) {
-        $result = Process-PackageFolder -PackageFolder $packageFolder
+        $result = Test-PackageFolder -PackageFolder $packageFolder
         
         if ($result.Success -eq $true) {
             $successCount++
